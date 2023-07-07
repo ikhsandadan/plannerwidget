@@ -23,6 +23,8 @@ export default function WeatherWidget() {
     const [wind, setWind] = useState([]);
     const [sunrise, setSunrise] = useState([]);
     const [sunset, setSunset] = useState([]);
+    const [checkLoc, setCheckLoc] = useState([]);
+
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -31,8 +33,7 @@ export default function WeatherWidget() {
           },
           function(error) {
             if (error.code === error.PERMISSION_DENIED)
-              setLat('0');
-              setLong('0');
+              setCheckLoc('Please Enable Your Location');
           });
 
           axios.get(`${process.env.REACT_APP_API_URL}/weather?lat=${lat}&lon=${long}&units=metric&appid=${process.env.REACT_APP_API_KEY}`)
@@ -53,7 +54,6 @@ export default function WeatherWidget() {
     }, [lat, long])
 
     let weatherIcon = null;
-    let noLoc = null;
 
     if (weather === 'Thunderstorm') {
       weatherIcon = <FontAwesomeIcon icon={faBolt} />;
@@ -69,10 +69,6 @@ export default function WeatherWidget() {
       weatherIcon = <FontAwesomeIcon icon={faCloud} />;
     } else {
       weatherIcon = <FontAwesomeIcon icon={faSmog} />;
-    }
-
-    if (lat === '0' && long === '0') {
-      noLoc = 'Please Enable Your Location';
     }
 
     const weatherStyle = {
@@ -109,13 +105,13 @@ export default function WeatherWidget() {
           </div>
           <div className='sunrise' style={dataStyle}>
             <p style={{ fontWeight: "bold" }}>Sunrise</p>
-            <p>{new Date(sunrise * 1000).toLocaleTimeString('en-IN')}</p>
+            <p>{new Date(sunrise * 1000).toLocaleTimeString()}</p>
           </div>
           <div className='sunset' style={dataStyle}>
             <p style={{ fontWeight: "bold" }}>Sunset</p>
-            <p>{new Date(sunset * 1000).toLocaleTimeString('en-IN')}</p>
+            <p>{new Date(sunset * 1000).toLocaleTimeString()}</p>
           </div>
-          <p style={{ display: "flex", justifyContent: "center", fontWeight: "bold" }}>{noLoc}</p>
+          <p style={{ display: "flex", justifyContent: "center", fontWeight: "bold" }}>{checkLoc}</p>
           <div className='refresh' style={{ display: "flex", justifyContent: "center" }}>
             <button 
               style={{
